@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node + Jest Demo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Node + Jest Demo</h1>
+    <div class="container">
+      <input id="a" type="number" placeholder="Número A" />
+      <input id="b" type="number" placeholder="Número B" />
+      <div class="buttons">
+        <button onclick="calc('add')">Somar</button>
+        <button onclick="calc('subtract')">Subtrair</button>
+      </div>
+      <p id="result"></p>
+    </div>
+
+    <script>
+      async function calc(op) {
+        const a = document.getElementById("a").value;
+        const b = document.getElementById("b").value;
+        const resEl = document.getElementById("result");
+        try {
+          const res = await fetch(`/api/${op}?a=${a}&b=${b}`);
+          const data = await res.json();
+          resEl.textContent =
+            data.result !== undefined
+              ? `Resultado: ${data.result}`
+              : `Erro: ${data.error}`;
+        } catch (err) {
+          resEl.textContent = "Erro ao comunicar com o servidor.";
+        }
+      }
+    </script>
+  </body>
+</html>
