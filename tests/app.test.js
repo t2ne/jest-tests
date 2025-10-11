@@ -71,4 +71,43 @@ describe("Express App Integration Tests", () => {
       }
     });
   });
+
+  describe("API Routes", () => {
+    test("should handle POST /api/submissions", async () => {
+      const submission = {
+        studentId: "12345",
+        exerciseId: "1",
+        code: "function test() { return true; }",
+        passed: true,
+        attempts: 1,
+      };
+
+      const res = await request(app).post("/api/submissions").send(submission);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.submission.studentId).toBe("12345");
+    });
+
+    test("should handle GET /api/admin/submissions", async () => {
+      const res = await request(app).get("/api/admin/submissions");
+      expect(res.statusCode).toBe(200);
+      expect(typeof res.body).toBe("object");
+    });
+
+    test("should serve admin page", async () => {
+      const res = await request(app).get("/admin");
+      expect(res.statusCode).toBe(200);
+      expect(res.text).toContain("Dashboard Admin");
+    });
+
+    test("should validate required fields in submissions", async () => {
+      const res = await request(app)
+        .post("/api/submissions")
+        .send({ studentId: "12345" }); // Missing required fields
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toContain("Missing required fields");
+    });
+  });
 });

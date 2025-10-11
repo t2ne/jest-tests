@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Mini Testes</title>
+    <link rel="stylesheet" href="/tailwind.css" />
+  </head>
+  <body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- Header -->
+    <header
+      class="bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg"
+    >
+      <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              ></path>
+            </svg>
+            <h1 class="text-2xl font-bold">Dashboard Admin - Mini Testes</h1>
+          </div>
+          <a
+            href="/"
+            class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
+          >
+            Voltar à Aplicação
+          </a>
+        </div>
+        <p class="text-blue-100 mt-2">
+          Visualiza as respostas e progresso dos alunos
+        </p>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Loading State -->
+      <div id="loading" class="text-center py-12">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"
+        ></div>
+        <p class="mt-4 text-slate-600">A carregar submissions...</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 hidden">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600">Total Alunos</p>
+              <p id="total-students" class="text-2xl font-bold text-slate-900">
+                0
+              </p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-full">
+              <svg
+                class="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600">
+                Total Submissions
+              </p>
+              <p
+                id="total-submissions"
+                class="text-2xl font-bold text-slate-900"
+              >
+                0
+              </p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+              <svg
+                class="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600">
+                Exercícios Completos
+              </p>
+              <p
+                id="completed-exercises"
+                class="text-2xl font-bold text-slate-900"
+              >
+                0
+              </p>
+            </div>
+            <div class="bg-emerald-100 p-3 rounded-full">
+              <svg
+                class="w-6 h-6 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600">Taxa de Sucesso</p>
+              <p id="success-rate" class="text-2xl font-bold text-slate-900">
+                0%
+              </p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+              <svg
+                class="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Students List -->
+      <div id="submissions-container" class="hidden">
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200">
+          <div class="p-6 border-b border-slate-200">
+            <h2
+              class="text-xl font-semibold text-slate-800 flex items-center gap-2"
+            >
+              <svg
+                class="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
+              </svg>
+              Submissions dos Alunos
+            </h2>
+          </div>
+          <div id="students-list" class="p-6">
+            <!-- Students will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- No Data State -->
+      <div id="no-data" class="text-center py-12 hidden">
+        <svg
+          class="w-16 h-16 text-slate-400 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+          ></path>
+        </svg>
+        <h3 class="text-lg font-semibold text-slate-600 mb-2">
+          Nenhuma submission encontrada
+        </h3>
+        <p class="text-slate-500">
+          Os alunos ainda não submeteram nenhum exercício.
+        </p>
+      </div>
+    </main>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>
