@@ -13,7 +13,9 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
-  console.error('❌ ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env file');
+  console.error(
+    "ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env file"
+  );
   process.exit(1);
 }
 
