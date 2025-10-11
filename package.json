@@ -7,7 +7,10 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --ci --verbose",
-    "render-build": "npm test"
+    "build:assets": "cp ./src/frontend/exercises.js ./public/exercises.js",
+    "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/tailwind.css --minify",
+    "dev:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/tailwind.css --watch",
+    "render-build": "npm run build:assets && npm run build:css && npm test"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +20,11 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.20",
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
-    "supertest": "^7.1.4"
+    "postcss": "^8.4.47",
+    "supertest": "^7.1.4",
+    "tailwindcss": "^3.4.18"
   }
 }
