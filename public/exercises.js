@@ -36,7 +36,24 @@
       starter: `function sum(arr) {\n  // TODO\n}\n\nconsole.assert(sum([]) === 0, 'vazio');\nconsole.assert(sum([1,2,3]) === 6, '1+2+3');\nconsole.assert(sum([-1,5]) === 4, '-1+5');\n`,
       minAsserts: 3,
     },
-    
+    {
+  id: 4,
+  title: "Contar vogais",
+  description:
+    "Implementa contarVogais(str) que devolve o nº de vogais (a, e, i, o, u). Ignora maiúsculas e acentos.",
+  starter: `function contarVogais(str) {
+  // TODO
+}
+
+// testes
+console.assert(contarVogais('javascript') === 3, 'javascript → 3');
+console.assert(contarVogais('AEIOU') === 5, 'AEIOU → 5');
+console.assert(contarVogais('xyz') === 0, 'xyz → 0');
+// extra com acentos (se implementares normalização)
+console.assert(contarVogais('coração') === 4, 'coração → 4');
+`,
+  minAsserts: 3,
+}
   ];
 
   const savedStudent = localStorage.getItem(STORAGE_KEY);
