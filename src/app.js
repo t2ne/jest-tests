@@ -1,6 +1,10 @@
 const express = require("express");
 const path = require("path");
 
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const app = express();
 
 // Hide Express from headers for security
@@ -9,8 +13,12 @@ app.disable("x-powered-by");
 app.use(express.json());
 
 // Admin credentials from environment variables
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_USERNAME =
+  process.env.ADMIN_USERNAME ||
+  (process.env.NODE_ENV === "test" ? "test-admin" : null);
+const ADMIN_PASSWORD =
+  process.env.ADMIN_PASSWORD ||
+  (process.env.NODE_ENV === "test" ? "test-password" : null);
 
 if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
   console.error(
