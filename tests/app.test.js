@@ -89,16 +89,30 @@ describe("Express App Integration Tests", () => {
       expect(res.body.submission.studentId).toBe("12345");
     });
 
-    test("should handle GET /api/admin/submissions", async () => {
-      const res = await request(app).get("/api/admin/submissions");
+    test("should handle GET /api/admin/submissions with auth", async () => {
+      const res = await request(app)
+        .get("/api/admin/submissions")
+        .auth("test-admin", "test-password"); // Use test credentials
+
       expect(res.statusCode).toBe(200);
       expect(typeof res.body).toBe("object");
     });
 
-    test("should serve admin page", async () => {
-      const res = await request(app).get("/admin");
+    test("should serve admin page with auth", async () => {
+      const res = await request(app)
+        .get("/admin")
+        .auth("test-admin", "test-password"); // Use test credentials
+
       expect(res.statusCode).toBe(200);
       expect(res.text).toContain("Dashboard Admin");
+    });
+
+    test("should reject admin routes without auth", async () => {
+      const res1 = await request(app).get("/api/admin/submissions");
+      expect(res1.statusCode).toBe(401);
+
+      const res2 = await request(app).get("/admin");
+      expect(res2.statusCode).toBe(401);
     });
 
     test("should validate required fields in submissions", async () => {
@@ -108,6 +122,14 @@ describe("Express App Integration Tests", () => {
 
       expect(res.statusCode).toBe(400);
       expect(res.body.error).toContain("Missing required fields");
+    });
+
+    test("should reject admin routes with wrong credentials", async () => {
+      const res = await request(app)
+        .get("/api/admin/submissions")
+        .auth("wrong-user", "wrong-pass");
+
+      expect(res.statusCode).toBe(401);
     });
   });
 });
