@@ -61,18 +61,21 @@ console.assert(contarVogais('coração') === 4, 'coração → 4');
   type: "quiz",
   title: "Quiz: JS Básico (V/F)",
   description: "Responde V/F. Tens 60 segundos. As perguntas são baralhadas por aluno.",
-  durationSec: 60,           // timer
+  durationSec: 30,           // timer
   minScore: 0.7,             // 70% para passar
-  questions: [
-    { id: "q1", text: "Em JavaScript, [] === [] é true.", answer: false, topic: "igualdade" },
-    { id: "q2", text: "NaN === NaN é false.",             answer: true,  topic: "NaN" },
-    { id: "q3", text: "const impede reatribuição do identificador.", answer: true, topic: "const" },
-    { id: "q4", text: "`typeof null` devolve 'object'.",  answer: true,  topic: "typeof" },
-    { id: "q5", text: "Array.prototype.map altera o array original.", answer: false, topic: "arrays" },
-    { id: "q6", text: "0.1 + 0.2 === 0.3 é true.",        answer: false, topic: "floats" },
-    { id: "q7", text: "Funções arrow têm o seu próprio this.", answer: false, topic: "arrow" },
-    { id: "q8", text: "`Number.isNaN('NaN')` é true.",    answer: false, topic: "NaN" }
-  ]
+questions: [
+  { id: "q1", text: "O projeto foi criado para ajudar estudantes a praticar JavaScript.", answer: true, topic: "objetivo" },
+  { id: "q2", text: "A plataforma usa React e Bootstrap no frontend.", answer: false, topic: "frontend" },
+  { id: "q3", text: "A autenticação do painel administrativo é feita com HTTP Basic.", answer: true, topic: "seguranca" },
+  { id: "q4", text: "O backend foi desenvolvido com Node.js e Express.", answer: true, topic: "backend" },
+  { id: "q5", text: "A interface é moderna e responsiva graças ao uso de Tailwind CSS.", answer: true, topic: "frontend" },
+  { id: "q6", text: "Os testes foram implementados com Jest e Supertest.", answer: true, topic: "testes" },
+  { id: "q7", text: "O dashboard administrativo atualiza automaticamente a cada 30 segundos.", answer: true, topic: "admin" },
+  { id: "q8", text: "O objetivo principal do projeto é o entretenimento.", answer: false, topic: "objetivo" }
+]
+
+
+
 }
 
   ];
