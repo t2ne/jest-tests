@@ -31,7 +31,7 @@ Uma plataforma interativa para aprender e testar JavaScript, com dashboard admin
 
 ### **Sistema de Testes:**
 
-- **75 testes Jest** abrangentes
+- **77 testes Jest** abrangentes
 - Testes de integração com Supertest
 - Cobertura completa de APIs e funcionalidades
 - Testes de performance e segurança
@@ -102,25 +102,25 @@ ADMIN_PASSWORD=uma_password
 PORT=3000
 ```
 
-### 4. **Build dos assets:**
+### 4. **Build dos assets (Opcional):**
 
 ```bash
 npm run build:assets  # Copia exercises.js
 npm run build:css     # Compila Tailwind CSS
 ```
 
-### 5. **Executar em desenvolvimento:**
+### 5. **Executar testes:**
 
 ```bash
-npm run dev          # Servidor + watch CSS
-# ou
-npm start           # Apenas servidor
+npm test            # 77 testes Jest
 ```
 
-### 6. **Executar testes:**
+### 6. **Executar em desenvolvimento:**
 
 ```bash
-npm test            # 71 testes Jest
+npm run dev         # Servidor + watch CSS
+# ou
+npm start           # Apenas servidor
 ```
 
 **Acesso local:**
