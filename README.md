@@ -102,10 +102,9 @@ ADMIN_PASSWORD=uma_password
 PORT=3000
 ```
 
-### 4. **Build dos assets (Opcional):**
+### 4. **Build do css:**
 
 ```bash
-npm run build:assets  # Copia exercises.js
 npm run build:css     # Compila Tailwind CSS
 ```
 
@@ -224,7 +223,6 @@ npm test -- --verbose      # Output detalhado
 npm start             # Produção
 npm run dev           # Desenvolvimento (nodemon)
 npm test              # Executar testes Jest
-npm run build:assets  # Copiar exercises.js
 npm run build:css     # Compilar Tailwind CSS
 npm run dev:css       # Watch mode CSS
 npm run render-build  # Build completo para Render

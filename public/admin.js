@@ -76,6 +76,41 @@
             const statusIcon = sub.passed ? "✓" : "✗";
             const timeAgo = formatTimeAgo(new Date(sub.timestamp));
 
+            // Quiz formatting
+            let codeDisplay = "";
+            if (
+              typeof sub.code === "string" &&
+              sub.code.startsWith("QUIZ_VF")
+            ) {
+              // Parse quiz answers and score
+              const match = sub.code.match(
+                /respostas=(\{.*?\}) score=([0-9.]+)/
+              );
+              if (match) {
+                const answers = JSON.parse(match[1]);
+                const score = Math.round(Number(match[2]) * 100);
+                codeDisplay =
+                  `<div class='mb-2'><strong>Respostas:</strong></div><ul class='mb-2 pl-4 list-disc'>` +
+                  Object.entries(answers)
+                    .map(
+                      ([qid, val]) =>
+                        `<li>${qid}: <span class='font-mono'>${
+                          val ? "V" : "F"
+                        }</span></li>`
+                    )
+                    .join("") +
+                  `</ul><div><strong>Score:</strong> <span class='font-mono'>${score}%</span></div>`;
+              } else {
+                codeDisplay = `<pre class='bg-slate-100 border border-slate-200 rounded p-3 overflow-x-auto font-mono text-xs whitespace-pre-wrap break-words'><code>${escapeHtml(
+                  sub.code
+                )}</code></pre>`;
+              }
+            } else {
+              codeDisplay = `<pre class='bg-slate-100 border border-slate-200 rounded p-3 overflow-x-auto font-mono text-xs whitespace-pre-wrap break-words'><code>${escapeHtml(
+                sub.code
+              )}</code></pre>`;
+            }
+
             return `
           <div class="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors">
             <div class="flex items-center justify-between mb-2">
@@ -91,10 +126,8 @@
               <p><strong>Última submissão:</strong> ${timeAgo}</p>
             </div>
             <details class="text-sm">
-              <summary class="cursor-pointer text-blue-600 hover:text-blue-800 font-medium">Ver Código</summary>
-              <pre class="mt-2 bg-slate-100 border border-slate-200 rounded p-3 overflow-x-auto font-mono text-xs"><code>${escapeHtml(
-                sub.code
-              )}</code></pre>
+              <summary class="cursor-pointer text-blue-600 hover:text-blue-800 font-medium" style="cursor:pointer">Ver Código</summary>
+              <div class="mt-2">${codeDisplay}</div>
             </details>
           </div>
         `;
@@ -118,7 +151,7 @@
               </div>
               <div>
                 <h3 class="text-xl font-bold text-slate-800">Aluno ${studentId}</h3>
-                <p class="text-slate-600">${completedCount}/${3} exercícios completos</p>
+                <p class="text-slate-600">${completedCount}/${5} exercícios completos</p>
               </div>
             </div>
             <div class="text-right">

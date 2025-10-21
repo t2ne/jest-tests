@@ -7,7 +7,6 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --ci --verbose",
-    "build:assets": "cp ./src/frontend/exercises.js ./public/exercises.js",
     "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/tailwind.css --minify",
     "dev:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/tailwind.css --watch",
     "render-build": "npm run build:assets && npm run build:css && npm test"

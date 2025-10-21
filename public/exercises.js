@@ -1,4 +1,3 @@
-// Copiado de public/exercises.js para origem em src/frontend; será copiado para public via build:assets
 (function () {
   const form = document.getElementById("student-form");
   const studentInput = document.getElementById("student-id");
@@ -41,28 +40,17 @@
       title: "Contar vogais",
       description:
         "Implementa contarVogais(str) que devolve o nº de vogais (a, e, i, o, u). Ignora maiúsculas e acentos.",
-      starter: `function contarVogais(str) {
-  // TODO
-}
-
-// testes
-console.assert(contarVogais('javascript') === 3, 'javascript → 3');
-console.assert(contarVogais('AEIOU') === 5, 'AEIOU → 5');
-console.assert(contarVogais('xyz') === 0, 'xyz → 0');
-// extra com acentos (se implementares normalização)
-console.assert(contarVogais('coração') === 4, 'coração → 4');
-`,
+      starter: `function contarVogais(str) {\n  // TODO\n}\n\n// testes\nconsole.assert(contarVogais('javascript') === 3, 'javascript → 3');\nconsole.assert(contarVogais('AEIOU') === 5, 'AEIOU → 5');\nconsole.assert(contarVogais('xyz') === 0, 'xyz → 0');\n// extra com acentos (se implementares normalização)\nconsole.assert(contarVogais('coração') === 4, 'coração → 4');\n`,
       minAsserts: 3,
     },
-
     {
       id: 5,
       type: "quiz",
       title: "Quiz: JS Básico (V/F)",
       description:
-        "Responde V/F. Tens 40 segundos. As perguntas são baralhadas por aluno.",
-      durationSec: 40, // timer
-      minScore: 0.7, // 70% para passar
+        "Responde V/F. Tens 60 segundos. As perguntas são baralhadas por aluno.",
+      durationSec: 30,
+      minScore: 0.7,
       questions: [
         {
           id: "q1",
@@ -149,14 +137,26 @@ console.assert(contarVogais('coração') === 4, 'coração → 4');
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
-      // Clear localStorage
       localStorage.removeItem(STORAGE_KEY);
-      // Show form, hide exercises
       form.classList.remove("hidden");
       root.classList.add("hidden");
-      // Clear student input
       studentInput.value = "";
       studentInput.focus();
+    });
+  }
+
+  // Reset All functionality
+  const resetAllBtn = document.getElementById("reset-all-btn");
+  if (resetAllBtn) {
+    resetAllBtn.addEventListener("click", () => {
+      // Clear all exercise progress for current student
+      localStorage.removeItem(PROGRESS_KEY);
+      renderExercises();
+      // Optionally clear feedback/results
+      const resBox = document.getElementById("exec-results");
+      const logsBox = document.getElementById("exec-logs");
+      if (resBox) resBox.innerHTML = "";
+      if (logsBox) logsBox.textContent = "";
     });
   }
 
@@ -200,6 +200,7 @@ console.assert(contarVogais('coração') === 4, 'coração → 4');
       item.appendChild(header);
       item.appendChild(content);
       list.appendChild(item);
+
       if (ex.type === "quiz") {
         // esconder editor e botões de código
         content.querySelector("div.mb-4")?.classList.add("hidden");
@@ -223,21 +224,24 @@ console.assert(contarVogais('coração') === 4, 'coração → 4');
         const looksLikeQuiz =
           typeof saved === "string" && saved.startsWith("QUIZ_VF");
         ta.value = looksLikeQuiz ? ex.starter : saved ?? ex.starter;
+        ta.addEventListener("input", () => saveCode(ex.id, ta.value));
       }
 
       header.addEventListener("click", () => {
         content.classList.toggle("hidden");
       });
-      content
-        .querySelector(`[data-run="${ex.id}"]`)
-        .addEventListener("click", () => runExercise(ex));
-      content
-        .querySelector(`[data-reset="${ex.id}"]`)
-        .addEventListener("click", () => {
-          ta.value = ex.starter;
-          saveCode(ex.id, ta.value);
-        });
-      ta.addEventListener("input", () => saveCode(ex.id, ta.value));
+
+      if (ex.type !== "quiz") {
+        content
+          .querySelector(`[data-run="${ex.id}"]`)
+          .addEventListener("click", () => runExercise(ex));
+        content
+          .querySelector(`[data-reset="${ex.id}"]`)
+          .addEventListener("click", () => {
+            ta.value = ex.starter;
+            saveCode(ex.id, ta.value);
+          });
+      }
     });
   }
 
@@ -252,185 +256,6 @@ console.assert(contarVogais('coração') === 4, 'coração → 4');
       return JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
     } catch {
       return {};
-    }
-  }
-
-  // RNG estável por aluno+exercício (baralha perguntas/ordem sem “dar azar”)
-  function mulberry32(seed) {
-    return function () {
-      let t = (seed += 0x6d2b79f5);
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  function seededShuffle(arr, rng) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function renderQuizContent(ex, container) {
-    const studentId = localStorage.getItem("mini-tests:student") || "0";
-    const seed = Number(studentId) + ex.id * 1009;
-    const rng = mulberry32(seed);
-
-    const qs = seededShuffle(ex.questions, rng);
-    const state = {
-      answers: {},
-      startedAt: null,
-      remaining: ex.durationSec || 60,
-      timerId: null,
-      finished: false,
-      timerStarted: false,
-    };
-
-    container.innerHTML = `
-    <div class="flex items-center justify-between mb-3">
-      <div class="text-sm text-slate-600">Precisas de ${Math.round(
-        (ex.minScore || 0.7) * 100
-      )}% para passar.</div>
-      <div id="quiz-timer-${
-        ex.id
-      }" class="font-mono text-sm bg-slate-200 rounded px-2 py-1">Clica numa resposta para começar</div>
-    </div>
-    <div id="quiz-qs-${ex.id}" class="space-y-3"></div>
-    <div class="mt-4 flex gap-3">
-      <button id="quiz-submit-${
-        ex.id
-      }" class="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2" >Submeter</button>
-      <button id="quiz-reset-${
-        ex.id
-      }" class="bg-slate-500 hover:bg-slate-600 text-white font-semibold px-4 py-2 rounded-lg">Repor</button>
-    </div>
-  `;
-
-    const list = container.querySelector(`#quiz-qs-${ex.id}`);
-    qs.forEach((q, idx) => {
-      const row = document.createElement("div");
-      row.className = "p-3 rounded-xl bg-white border border-slate-200";
-      row.innerHTML = `
-      <div class="mb-2"><span class="font-semibold">Q${idx + 1}.</span> ${
-        q.text
-      }</div>
-      <div class="flex gap-2">
-        <button data-a="true"  data-q="${
-          q.id
-        }" class="px-3 py-1 rounded bg-green-50 hover:bg-green-100 border border-green-200">V</button>
-        <button data-a="false" data-q="${
-          q.id
-        }" class="px-3 py-1 rounded bg-red-50 hover:bg-red-100 border border-red-200">F</button>
-      </div>
-    `;
-      list.appendChild(row);
-    });
-
-    // timer functions
-    const timerEl = container.querySelector(`#quiz-timer-${ex.id}`);
-    function startTimer() {
-      if (state.timerStarted || state.finished) return;
-      state.timerStarted = true;
-      state.startedAt = Date.now();
-
-      function tick() {
-        const m = Math.floor(state.remaining / 60);
-        const s = state.remaining % 60;
-        timerEl.textContent = `${String(m).padStart(2, "0")}:${String(
-          s
-        ).padStart(2, "0")}`;
-        if (state.remaining <= 0) {
-          finish(true);
-          return;
-        }
-        state.remaining -= 1;
-      }
-
-      state.timerId = setInterval(tick, 1000);
-      tick(); // show initial time
-    }
-
-    // captação de respostas
-    list.addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-q]");
-      if (!btn || state.finished) return;
-
-      // Start timer on first click
-      startTimer();
-
-      const qid = btn.getAttribute("data-q");
-      const val = btn.getAttribute("data-a") === "true";
-      state.answers[qid] = val;
-      // feedback visual simples
-      const siblings = list.querySelectorAll(`button[data-q="${qid}"]`);
-      siblings.forEach((b) => b.classList.remove("ring-2", "ring-indigo-400"));
-      btn.classList.add("ring-2", "ring-indigo-400");
-    });
-
-    // submit/reset
-    container
-      .querySelector(`#quiz-submit-${ex.id}`)
-      .addEventListener("click", () => finish(false));
-    container
-      .querySelector(`#quiz-reset-${ex.id}`)
-      .addEventListener("click", () => {
-        clearInterval(state.timerId);
-        renderQuizContent(ex, container); // re-render
-      });
-
-    const resBox = document.getElementById("exec-results");
-    const logsBox = document.getElementById("exec-logs");
-
-    function finish(byTimeout) {
-      if (state.finished) return;
-      state.finished = true;
-      clearInterval(state.timerId);
-
-      // correção
-      let correct = 0;
-      const detail = [];
-      for (const q of qs) {
-        const ans = state.answers[q.id];
-        const ok = ans === q.answer;
-        if (ok) correct++;
-        detail.push({ id: q.id, ok, expected: q.answer, given: ans });
-      }
-      const score = qs.length ? correct / qs.length : 0;
-      const passed = score >= (ex.minScore || 0.7);
-
-      // feedback UI
-      resBox.innerHTML = "";
-      const msg = document.createElement("div");
-      msg.className = `px-3 py-2 rounded mb-2 ${
-        passed ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
-      }`;
-      msg.textContent =
-        `Acertaste ${correct}/${qs.length} (${Math.round(score * 100)}%). ${
-          passed ? "Passou ✅" : "Não passou ❌"
-        }` + (byTimeout ? " (tempo esgotado)" : "");
-      resBox.appendChild(msg);
-
-      const issues = detail.filter((d) => !d.ok);
-      if (issues.length) {
-        issues.forEach((d) => {
-          const it = document.createElement("div");
-          it.className =
-            "text-sm px-3 py-2 rounded mb-2 bg-yellow-50 text-yellow-800";
-          it.textContent = `Falhou ${d.id}: esperado ${
-            d.expected ? "V" : "F"
-          }, respondido ${d.given === undefined ? "—" : d.given ? "V" : "F"}`;
-          resBox.appendChild(it);
-        });
-      }
-      logsBox.textContent = "";
-
-      // grava progresso + submission (reaproveita as tuas funções)
-      const summaryCode = `QUIZ_VF respostas=${JSON.stringify(
-        state.answers
-      )} score=${score}`;
-      markProgress(ex.id, passed, summaryCode);
     }
   }
 
@@ -572,5 +397,185 @@ console.assert(contarVogais('coração') === 4, 'coração → 4');
       resBox.appendChild(div);
     });
     logsBox.textContent = logs.join("\n");
+  }
+
+  // RNG estável por aluno+exercício (baralha perguntas/ordem sem "dar azar")
+  function mulberry32(seed) {
+    return function () {
+      let t = (seed += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function seededShuffle(arr, rng) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function renderQuizContent(ex, container) {
+    const studentId = localStorage.getItem("mini-tests:student") || "0";
+    const seed = Number(studentId) + ex.id * 1009;
+    const rng = mulberry32(seed);
+
+    const qs = seededShuffle(ex.questions, rng);
+    const state = {
+      answers: {},
+      startedAt: null,
+      remaining: ex.durationSec || 60,
+      timerId: null,
+      finished: false,
+      timerStarted: false,
+    };
+
+    container.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-sm text-slate-600">Precisas de ${Math.round(
+          (ex.minScore || 0.7) * 100
+        )}% para passar.</div>
+        <div id="quiz-timer-${
+          ex.id
+        }" class="font-mono text-sm bg-slate-200 rounded px-2 py-1">Clica numa resposta para começar</div>
+      </div>
+      <div id="quiz-qs-${ex.id}" class="space-y-3"></div>
+      <div class="mt-4 flex gap-3">
+        <button id="quiz-submit-${
+          ex.id
+        }" class="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2" >Submeter</button>
+        <button id="quiz-reset-${
+          ex.id
+        }" class="bg-slate-500 hover:bg-slate-600 text-white font-semibold px-4 py-2 rounded-lg">Repor</button>
+      </div>
+    `;
+
+    const list = container.querySelector(`#quiz-qs-${ex.id}`);
+    qs.forEach((q, idx) => {
+      const row = document.createElement("div");
+      row.className = "p-3 rounded-xl bg-white border border-slate-200";
+      row.innerHTML = `
+        <div class="mb-2"><span class="font-semibold">Q${idx + 1}.</span> ${
+        q.text
+      }</div>
+        <div class="flex gap-2">
+          <button data-a="true"  data-q="${
+            q.id
+          }" class="px-3 py-1 rounded bg-green-50 hover:bg-green-100 border border-green-200">V</button>
+          <button data-a="false" data-q="${
+            q.id
+          }" class="px-3 py-1 rounded bg-red-50 hover:bg-red-100 border border-red-200">F</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+
+    // timer functions
+    const timerEl = container.querySelector(`#quiz-timer-${ex.id}`);
+    function startTimer() {
+      if (state.timerStarted || state.finished) return;
+      state.timerStarted = true;
+      state.startedAt = Date.now();
+
+      function tick() {
+        const m = Math.floor(state.remaining / 60);
+        const s = state.remaining % 60;
+        timerEl.textContent = `${String(m).padStart(2, "0")}:${String(
+          s
+        ).padStart(2, "0")}`;
+        if (state.remaining <= 0) {
+          finish(true);
+          return;
+        }
+        state.remaining -= 1;
+      }
+
+      state.timerId = setInterval(tick, 1000);
+      tick(); // show initial time
+    }
+
+    // captação de respostas
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-q]");
+      if (!btn || state.finished) return;
+
+      // Start timer on first click
+      startTimer();
+
+      const qid = btn.getAttribute("data-q");
+      const val = btn.getAttribute("data-a") === "true";
+      state.answers[qid] = val;
+      // feedback visual simples
+      const siblings = list.querySelectorAll(`button[data-q="${qid}"]`);
+      siblings.forEach((b) => b.classList.remove("ring-2", "ring-indigo-400"));
+      btn.classList.add("ring-2", "ring-indigo-400");
+    });
+
+    // submit/reset
+    container
+      .querySelector(`#quiz-submit-${ex.id}`)
+      .addEventListener("click", () => finish(false));
+    container
+      .querySelector(`#quiz-reset-${ex.id}`)
+      .addEventListener("click", () => {
+        clearInterval(state.timerId);
+        renderQuizContent(ex, container); // re-render
+      });
+
+    const resBox = document.getElementById("exec-results");
+    const logsBox = document.getElementById("exec-logs");
+
+    function finish(byTimeout) {
+      if (state.finished) return;
+      state.finished = true;
+      clearInterval(state.timerId);
+
+      // correção
+      let correct = 0;
+      const detail = [];
+      for (const q of qs) {
+        const ans = state.answers[q.id];
+        const ok = ans === q.answer;
+        if (ok) correct++;
+        detail.push({ id: q.id, ok, expected: q.answer, given: ans });
+      }
+      const score = qs.length ? correct / qs.length : 0;
+      const passed = score >= (ex.minScore || 0.7);
+
+      // feedback UI
+      resBox.innerHTML = "";
+      const msg = document.createElement("div");
+      msg.className = `px-3 py-2 rounded mb-2 ${
+        passed ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
+      }`;
+      msg.textContent =
+        `Acertaste ${correct}/${qs.length} (${Math.round(score * 100)}%). ${
+          passed ? "Passou ✅" : "Não passou ❌"
+        }` + (byTimeout ? " (tempo esgotado)" : "");
+      resBox.appendChild(msg);
+
+      const issues = detail.filter((d) => !d.ok);
+      if (issues.length) {
+        issues.forEach((d) => {
+          const it = document.createElement("div");
+          it.className =
+            "text-sm px-3 py-2 rounded mb-2 bg-yellow-50 text-yellow-800";
+          it.textContent = `Falhou ${d.id}: esperado ${
+            d.expected ? "V" : "F"
+          }, respondido ${d.given === undefined ? "—" : d.given ? "V" : "F"}`;
+          resBox.appendChild(it);
+        });
+      }
+      logsBox.textContent = "";
+
+      // grava progresso + submission (reaproveita as tuas funções)
+      const summaryCode = `QUIZ_VF respostas=${JSON.stringify(
+        state.answers
+      )} score=${score}`;
+      markProgress(ex.id, passed, summaryCode);
+    }
   }
 })();
