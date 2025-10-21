@@ -97,8 +97,8 @@ cp .env.example .env
 **Conteúdo do `.env`:**
 
 ```env
-ADMIN_USERNAME=seu_username
-ADMIN_PASSWORD=sua_password
+ADMIN_USERNAME=um_username
+ADMIN_PASSWORD=uma_password
 PORT=3000
 ```
 
