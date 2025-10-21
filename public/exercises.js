@@ -48,8 +48,8 @@
       type: "quiz",
       title: "Quiz: JS Básico (V/F)",
       description:
-        "Responde V/F. Tens 60 segundos. As perguntas são baralhadas por aluno.",
-      durationSec: 30,
+        "Responde V/F. Tens 40 segundos. As perguntas são baralhadas por aluno.",
+      durationSec: 40,
       minScore: 0.7,
       questions: [
         {
